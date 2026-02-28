@@ -1,24 +1,32 @@
+"""
+Flask server for Emotion Detector application.
+"""
+
 from flask import Flask, render_template, request
+
+# pylint: disable=import-error
 from emotion_detection import emotion_detector
 
-app = Flask("EmotionDetector")
+app = Flask(__name__)
 
-@app.route('/')
+
+@app.route("/")
 def home():
-    return render_template('index.html')
+    """Render the home page."""
+    return render_template("index.html")
 
-@app.route('/emotionDetector')
+
+@app.route("/emotionDetector")
 def analyze_emotion():
-    text_to_analyze = request.args.get('textToAnalyze', '')
+    """Analyze emotion from user input text."""
+    text_to_analyze = request.args.get("textToAnalyze", "").strip()
 
-    # If blank input, immediately show message (status 200 so UI displays it)
-    if not text_to_analyze.strip():
+    if not text_to_analyze:
         return "Invalid text! Please try again!"
 
     result = emotion_detector(text_to_analyze)
 
-    # If dominant_emotion is None, show message (status 200 so UI displays it)
-    if not result or result.get('dominant_emotion') is None:
+    if not result or result.get("dominant_emotion") is None:
         return "Invalid text! Please try again!"
 
     return (
@@ -31,5 +39,6 @@ def analyze_emotion():
         f"The dominant emotion is {result['dominant_emotion']}."
     )
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
